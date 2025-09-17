@@ -1,2 +1,3 @@
+com\todo\gui\TodoAppGUI.class
 com\todo\Main.class
 com\todo\util\DatabaseConnection.class

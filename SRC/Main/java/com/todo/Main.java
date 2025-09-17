@@ -1,17 +1,32 @@
 package com.todo;
 
+import com.todo.gui.TodoAppGUI;
 import com.todo.util.DatabaseConnection;
+
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
-        DatabaseConnection db_Connection = new DatabaseConnection();
-        try (Connection conn = db_Connection.getDBConnection()) {
+        // Initialize database connection
+        DatabaseConnection dbConnection = new DatabaseConnection();
+        try (Connection conn = dbConnection.getDBConnection()) {
             System.out.println("Database connection successful!");
+            
+            // Launch the GUI on the Event Dispatch Thread (EDT)
+            SwingUtilities.invokeLater(() -> {
+                TodoAppGUI todoApp = new TodoAppGUI();
+                todoApp.setVisible(true);
+            });
+            
         } catch (SQLException e) {
-            System.out.println("The database connection has failed: " + e.getMessage());
+            System.err.println("The database connection has failed: " + e.getMessage());
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null, 
+                "Failed to connect to the database: " + e.getMessage(), 
+                "Database Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
     }
 }
