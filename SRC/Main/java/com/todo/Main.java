@@ -1,32 +1,41 @@
 package com.todo;
 
-import com.todo.gui.TodoAppGUI;
-import com.todo.util.DatabaseConnection;
-
-import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class Main {
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+import com.todo.gui.TodoAppGUI;
+import com.todo.util.DatabaseConnection;
+public class Main{
     public static void main(String[] args) {
-        // Initialize database connection
-        DatabaseConnection dbConnection = new DatabaseConnection();
-        try (Connection conn = dbConnection.getDBConnection()) {
-            System.out.println("Database connection successful!");
-            
-            // Launch the GUI on the Event Dispatch Thread (EDT)
-            SwingUtilities.invokeLater(() -> {
-                TodoAppGUI todoApp = new TodoAppGUI();
-                todoApp.setVisible(true);
-            });
-            
-        } catch (SQLException e) {
-            System.err.println("The database connection has failed: " + e.getMessage());
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, 
-                "Failed to connect to the database: " + e.getMessage(), 
-                "Database Error", 
-                JOptionPane.ERROR_MESSAGE);
+        DatabaseConnection db_Connection = new DatabaseConnection();
+        try{
+            Connection cn=db_Connection.getDBConnection();
+            System.out.println("databse connected successfully");
         }
+        catch(SQLException e){
+            System.out.print("The Database Connection failed");
+            System.exit(1);
+        }
+        try{
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        }
+        catch(ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e){
+            System.err.println("Could not set look and feel"+e.getMessage());
+        }
+
+        SwingUtilities.invokeLater(
+                () -> {
+                    try{
+                        new TodoAppGUI().setVisible(true);
+                    }
+                    catch(Exception e){
+                        System.err.println("Error Starting Apllication "+e.getLocalizedMessage());
+                    }
+                }
+        );
     }
 }
